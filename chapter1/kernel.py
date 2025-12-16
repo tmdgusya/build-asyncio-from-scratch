@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List
+from typing import Callable, Dict, List
 
 
 class FileDescriptorState(Enum):
@@ -15,6 +15,8 @@ class KernelSocket:
     fd: int
     recv_buffer: List[bytes]
     send_buffer: List[bytes]
+
+    wait_queue: List[Callable[[int, str], None]]
 
     def has_data_to_read(self) -> bool:
         return len(self.recv_buffer) > 0
@@ -32,13 +34,20 @@ class KernelSimulator:
         """socket() system call"""
         fd = self.next_fd
         self.next_fd += 1
-        self.sockets[fd] = KernelSocket(fd, [], [])
+        self.sockets[fd] = KernelSocket(fd, [], [], [])
         return fd
 
     def simulate_packet_arrival(self, fd: int, data: bytes) -> None:
         """recvfrom() system call"""
-        if fd in self.sockets:
-            self.sockets[fd].recv_buffer.append(data)
+        if fd not in self.sockets:
+            return
+
+        socket = self.sockets[fd]
+        socket.recv_buffer.append(data)
+
+        for callback in socket.wait_queue:
+            callback(fd, "read")
+
 
     def check_ready(self, fd: int, event_type: str) -> bool:
 
