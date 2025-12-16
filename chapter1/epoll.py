@@ -12,6 +12,8 @@ class EpollEvent:
 
 class Epoll:
 
+    READ = 1
+
     def __init__(self, kernel: KernelSimulator) -> None:
         self.kernel = kernel
         self.interest_lsit: Dict[int, int] = {}
@@ -34,6 +36,8 @@ class Epoll:
                 if event_fd not in self._ready_set:
                     self._ready_set.add(event_fd)
                     self.ready_list.append(EpollEvent(event_fd, events=1))
+
+            socket.wait_queue.append(on_event)
 
     def epoll_wait(self, max_events: int, timeout: float = 10.0) -> List[EpollEvent]:
         self.syscall_count += 1
@@ -59,4 +63,4 @@ class Epoll:
             self._ready_set.discard(event.fd)
 
 
-        return self.ready_list[:max_events]
+        return result
