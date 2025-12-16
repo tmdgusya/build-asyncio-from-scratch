@@ -15,10 +15,11 @@ from chapter1.selector import Selector
 def run_example():
     kernel = KernelSimulator()
     selector = Selector(kernel)
+    number_of_clients = 5
 
     # 클라이언트 5개 연결 시뮬레이션
     clients = {}
-    for i in range(5):
+    for i in range(number_of_clients):
         fd = kernel.create_socket()
         clients[fd] = f"Client-{i+1}"
         print(f"{clients[fd]} 연결됨 (fd={fd})")
