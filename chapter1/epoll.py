@@ -16,7 +16,7 @@ class Epoll:
 
     def __init__(self, kernel: KernelSimulator) -> None:
         self.kernel = kernel
-        self.interest_lsit: Dict[int, int] = {}
+        self.interest_list: Dict[int, int] = {}
 
         self.ready_list: List[EpollEvent] = []
         self._ready_set: Set[int] = set()
@@ -26,7 +26,7 @@ class Epoll:
         self.syscall_count = 1
 
         # 관심 목록에 해당 event 등록
-        self.interest_lsit[fd] = events
+        self.interest_list[fd] = events
 
         if fd in self.kernel.sockets:
             socket = self.kernel.sockets[fd]
