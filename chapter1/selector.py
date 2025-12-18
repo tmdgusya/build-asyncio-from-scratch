@@ -1,14 +1,17 @@
 from time import sleep, time
-from chapter1.kernel import KernelSimulator
 from typing import List
 
-class Selector:
+from chapter1.kernel import KernelSimulator
 
+
+class Selector:
     def __init__(self, kernel: KernelSimulator) -> None:
         self.kernel = kernel
         self.syscall_count = 0
 
-    def select(self, read_fds: List[int], write_fds: List[int], timeout: int) -> tuple[List[int], List[int]]:
+    def select(
+        self, read_fds: List[int], write_fds: List[int], timeout: int
+    ) -> tuple[List[int], List[int]]:
         self.syscall_count = 1
 
         start_time = time()
@@ -25,7 +28,7 @@ class Selector:
                     ready_write.append(fd)
 
             if ready_read or ready_write:
-                break;
+                break
 
             if timeout and (time() - start_time) > timeout:
                 print("Timeout occurred")
